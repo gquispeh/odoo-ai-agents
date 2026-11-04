@@ -1,0 +1,17 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_ov_ve_role_user,ov.virtual.employee.role user,model_ov_virtual_employee_role,group_ov_ve_user,1,0,0,0
+access_ov_ve_role_manager,ov.virtual.employee.role manager,model_ov_virtual_employee_role,group_ov_ve_manager,1,1,1,1
+access_ov_ve_capability_user,ov.virtual.employee.capability user,model_ov_virtual_employee_capability,group_ov_ve_user,1,0,0,0
+access_ov_ve_capability_manager,ov.virtual.employee.capability manager,model_ov_virtual_employee_capability,group_ov_ve_manager,1,1,1,1
+access_ov_ve_employee_user,ov.virtual.employee user,model_ov_virtual_employee,group_ov_ve_user,1,1,1,0
+access_ov_ve_employee_manager,ov.virtual.employee manager,model_ov_virtual_employee,group_ov_ve_manager,1,1,1,1
+access_ov_ve_policy_user,ov.virtual.employee.policy user,model_ov_virtual_employee_policy,group_ov_ve_user,1,1,1,1
+access_ov_ve_policy_manager,ov.virtual.employee.policy manager,model_ov_virtual_employee_policy,group_ov_ve_manager,1,1,1,1
+access_ov_ve_task_user,ov.virtual.employee.task user,model_ov_virtual_employee_task,group_ov_ve_user,1,1,1,1
+access_ov_ve_task_manager,ov.virtual.employee.task manager,model_ov_virtual_employee_task,group_ov_ve_manager,1,1,1,1
+access_ov_ve_run_user,ov.virtual.employee.run user,model_ov_virtual_employee_run,group_ov_ve_user,1,1,1,0
+access_ov_ve_run_manager,ov.virtual.employee.run manager,model_ov_virtual_employee_run,group_ov_ve_manager,1,1,1,1
+access_ov_ve_action_user,ov.virtual.employee.action user,model_ov_virtual_employee_action,group_ov_ve_user,1,1,1,0
+access_ov_ve_action_manager,ov.virtual.employee.action manager,model_ov_virtual_employee_action,group_ov_ve_manager,1,1,1,1
+access_ov_ve_session_user,ov.virtual.employee.session user,model_ov_virtual_employee_session,group_ov_ve_user,1,1,1,1
+access_ov_ve_session_manager,ov.virtual.employee.session manager,model_ov_virtual_employee_session,group_ov_ve_manager,1,1,1,1

@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+
+    <!-- Defined first so the form view below can reference it via %(...)d -->
+    <record id="action_ov_ai_creator_execution" model="ir.actions.act_window">
+        <field name="name">Executions</field>
+        <field name="res_model">ov.ai.creator.execution</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- ============================================================== -->
+    <!-- List view                                                       -->
+    <!-- ============================================================== -->
+    <record id="view_ov_ai_creator_request_list" model="ir.ui.view">
+        <field name="name">ov.ai.creator.request.list</field>
+        <field name="model">ov.ai.creator.request</field>
+        <field name="arch" type="xml">
+            <list string="AI Record Creation Requests"
+                  decoration-info="state == 'draft'"
+                  decoration-warning="state == 'parsing'"
+                  decoration-primary="state == 'preview'"
+                  decoration-success="state == 'executed'"
+                  decoration-danger="state == 'failed'">
+                <field name="name"/>
+                <field name="create_date"/>
+                <field name="template_id"/>
+                <field name="target_model"/>
+                <field name="confidence" widget="progressbar"/>
+                <field name="cost_usd" sum="Total Cost"/>
+                <field name="state" widget="badge"
+                       decoration-info="state == 'draft'"
+                       decoration-warning="state == 'parsing'"
+                       decoration-primary="state == 'preview'"
+                       decoration-success="state == 'executed'"
+                       decoration-danger="state == 'failed'"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ============================================================== -->
+    <!-- Form view — confirmation gate UI                                -->
+    <!-- ============================================================== -->
+    <record id="view_ov_ai_creator_request_form" model="ir.ui.view">
+        <field name="name">ov.ai.creator.request.form</field>
+        <field name="model">ov.ai.creator.request</field>
+        <field name="arch" type="xml">
+            <form string="AI Record Creation Request">
+                <header>
+                    <button name="action_parse" type="object"
+                            string="Parse Intent"
+                            class="oe_highlight"
+                            invisible="state not in ('draft', 'failed')"/>
+                    <button name="action_confirm_and_execute" type="object"
+                            string="Confirm and Create Records"
+                            class="oe_highlight"
+                            confirm="This will create real records in Odoo. Proceed?"
+                            invisible="state != 'preview'"/>
+                    <button name="action_edit_parsed" type="object"
+                            string="Edit Parsed JSON"
+                            invisible="state != 'preview'"/>
+                    <button name="action_reject" type="object"
+                            string="Reject"
+                            invisible="state not in ('preview', 'parsing')"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,parsing,preview,executed"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="%(action_ov_ai_creator_execution)d"
+                                type="action"
+                                class="oe_stat_button"
+                                icon="fa-archive"
+                                invisible="not execution_id"
+                                context="{'search_default_request_id': id}">
+                            <field name="execution_id" widget="statinfo" string="Execution"/>
+                        </button>
+                    </div>
+                    <div class="alert alert-warning" role="alert"
+                         invisible="state != 'preview'">
+                        <strong>⚠ Confirmation required.</strong>
+                        Review the parsed records below carefully. Once you confirm,
+                        records will be created in Odoo and this action cannot be
+                        automatically undone.
+                    </div>
+                    <div class="alert alert-danger" role="alert"
+                         invisible="not warnings">
+                        <strong>Warnings:</strong> <field name="warnings" nolabel="1" readonly="1"/>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name" class="oe_edit_only"/>
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="template_id"
+                                   options="{'no_create': True}"
+                                   readonly="state not in ('draft', 'failed')"/>
+                            <field name="target_model" readonly="1"/>
+                            <field name="confidence" widget="progressbar" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="session_id" readonly="1"
+                                   invisible="not session_id"/>
+                            <field name="implementation_id" readonly="1"
+                                   invisible="not implementation_id"/>
+                            <field name="cost_usd" readonly="1"/>
+                            <field name="execution_id" invisible="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Natural Language Input" name="input">
+                            <field name="user_input"
+                                   placeholder="e.g. crea 5 empleados del área comercial con sueldo 2500 PEN y contrato indefinido"
+                                   readonly="state not in ('draft', 'failed')"/>
+                        </page>
+                        <page string="Parsed Preview" name="preview"
+                              invisible="state in ('draft',)">
+                            <div class="alert alert-info" role="alert"
+                                 invisible="state != 'preview'">
+                                This is what the LLM understood. Edit the JSON if anything
+                                is wrong before confirming.
+                            </div>
+                            <field name="parsed_json"
+                                   widget="ace" options="{'mode': 'json'}"
+                                   readonly="state in ('executed', 'failed', 'confirmed')"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <!-- ============================================================== -->
+    <!-- Search view                                                     -->
+    <!-- ============================================================== -->
+    <record id="view_ov_ai_creator_request_search" model="ir.ui.view">
+        <field name="name">ov.ai.creator.request.search</field>
+        <field name="model">ov.ai.creator.request</field>
+        <field name="arch" type="xml">
+            <search string="Requests">
+                <field name="name"/>
+                <field name="user_input"/>
+                <field name="template_id"/>
+                <field name="target_model"/>
+                <separator/>
+                <filter string="Awaiting Confirmation" name="filter_preview"
+                        domain="[('state', '=', 'preview')]"/>
+                <filter string="Executed" name="filter_executed"
+                        domain="[('state', '=', 'executed')]"/>
+                <filter string="Failed" name="filter_failed"
+                        domain="[('state', '=', 'failed')]"/>
+                <separator/>
+                <filter string="From Copilot" name="filter_from_copilot"
+                        domain="[('session_id', '!=', False)]"/>
+                <group>
+                    <filter string="State" name="group_state" context="{'group_by': 'state'}"/>
+                    <filter string="Template" name="group_template" context="{'group_by': 'template_id'}"/>
+                    <filter string="Target Model" name="group_target" context="{'group_by': 'target_model'}"/>
+                    <filter string="Created on" name="group_create_date" context="{'group_by': 'create_date:day'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ============================================================== -->
+    <!-- Action                                                          -->
+    <!-- ============================================================== -->
+    <record id="action_ov_ai_creator_request" model="ir.actions.act_window">
+        <field name="name">Record Creation Requests</field>
+        <field name="res_model">ov.ai.creator.request</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_ov_ai_creator_request_search"/>
+        <field name="context">{'search_default_filter_preview': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No requests yet
+            </p>
+            <p>
+                Describe what you want to create in natural language. The system
+                parses your intent, shows a preview, and only writes after you confirm.
+            </p>
+        </field>
+    </record>
+
+    <!-- ============================================================== -->
+    <!-- Execution log views                                             -->
+    <!-- ============================================================== -->
+    <record id="view_ov_ai_creator_execution_list" model="ir.ui.view">
+        <field name="name">ov.ai.creator.execution.list</field>
+        <field name="model">ov.ai.creator.execution</field>
+        <field name="arch" type="xml">
+            <list string="Executions"
+                  decoration-success="success"
+                  decoration-danger="not success">
+                <field name="create_date"/>
+                <field name="request_id"/>
+                <field name="template_id"/>
+                <field name="target_model"/>
+                <field name="record_count" sum="Total Records"/>
+                <field name="total_cost_usd" sum="Total Cost"/>
+                <field name="user_id"/>
+                <field name="success" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_ov_ai_creator_execution_form" model="ir.ui.view">
+        <field name="name">ov.ai.creator.execution.form</field>
+        <field name="model">ov.ai.creator.execution</field>
+        <field name="arch" type="xml">
+            <form string="Execution Log">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="request_id"/>
+                            <field name="template_id"/>
+                            <field name="target_model"/>
+                            <field name="record_count"/>
+                        </group>
+                        <group>
+                            <field name="success"/>
+                            <field name="user_id"/>
+                            <field name="total_cost_usd"/>
+                            <field name="create_date"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Created Records" name="records">
+                            <field name="record_ids_json" widget="ace" options="{'mode': 'json'}"/>
+                        </page>
+                        <page string="LLM Calls" name="audits">
+                            <field name="audit_ids"/>
+                        </page>
+                        <page string="Error" name="error" invisible="not error">
+                            <field name="error"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+</odoo>

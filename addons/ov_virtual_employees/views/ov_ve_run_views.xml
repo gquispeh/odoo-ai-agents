@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+
+    <!-- Action list (sub-view for the run form notebook) -->
+    <record id="view_ov_ve_action_list" model="ir.ui.view">
+        <field name="name">ov.virtual.employee.action.list</field>
+        <field name="model">ov.virtual.employee.action</field>
+        <field name="arch" type="xml">
+            <list string="Actions" editable="bottom"
+                  decoration-info="state == 'planned'"
+                  decoration-warning="state == 'awaiting_confirmation'"
+                  decoration-muted="state == 'suggested'"
+                  decoration-success="state in ('executed', 'confirmed')"
+                  decoration-danger="state == 'failed'"
+                  decoration-bf="state == 'awaiting_confirmation'">
+                <field name="sequence" widget="handle"/>
+                <field name="capability_id" options="{'no_create': True}"/>
+                <field name="justification"/>
+                <field name="state" widget="badge"/>
+                <field name="result_summary"/>
+                <field name="creator_request_id" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Run form -->
+    <record id="view_ov_ve_run_form" model="ir.ui.view">
+        <field name="name">ov.virtual.employee.run.form</field>
+        <field name="model">ov.virtual.employee.run</field>
+        <field name="arch" type="xml">
+            <form string="Run">
+                <header>
+                    <button name="action_start" type="object"
+                            string="Start"
+                            class="oe_highlight"
+                            invisible="state != 'queued'"/>
+                    <button name="action_approve_and_execute" type="object"
+                            string="Approve Plan and Execute"
+                            class="oe_highlight"
+                            confirm="The approved actions will execute against your live Odoo database. Proceed?"
+                            invisible="state != 'awaiting_approval'"/>
+                    <button name="action_reject" type="object"
+                            string="Reject"
+                            invisible="state != 'awaiting_approval'"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="queued,planning,awaiting_approval,executing,completed"/>
+                </header>
+                <sheet>
+                    <div class="alert alert-warning" role="alert"
+                         invisible="state != 'awaiting_approval'">
+                        <strong>⚠ Plan awaits your approval.</strong>
+                        Edit the plan JSON or individual actions below if needed.
+                        Nothing has been written yet.
+                    </div>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="employee_id" readonly="1"/>
+                            <field name="task_id" readonly="1"/>
+                            <field name="trigger_kind" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="requires_human_approval" readonly="1"/>
+                            <field name="total_cost_usd" readonly="1"/>
+                            <field name="create_date" readonly="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Perception" name="perceive">
+                            <field name="perceive_summary" readonly="1"/>
+                        </page>
+                        <page string="Plan" name="plan">
+                            <p class="text-muted">
+                                The planner LLM produced this JSON. Edit it before approving
+                                if anything is wrong — the action checklist below will be
+                                regenerated from this JSON on approval.
+                            </p>
+                            <field name="plan_json" widget="ace" options="{'mode': 'json'}"
+                                   readonly="state not in ('awaiting_approval',)"/>
+                        </page>
+                        <page string="Actions" name="actions">
+                            <field name="action_ids" nolabel="1">
+                                <list editable="bottom"
+                                      decoration-info="state == 'planned'"
+                                      decoration-warning="state == 'awaiting_confirmation'"
+                                      decoration-muted="state == 'suggested'"
+                                      decoration-success="state in ('executed', 'confirmed')"
+                                      decoration-danger="state == 'failed'">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="capability_id"/>
+                                    <field name="justification"/>
+                                    <field name="state" widget="badge"/>
+                                    <field name="result_summary"/>
+                                    <field name="creator_request_id" optional="show"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Reflection" name="reflection"
+                              invisible="state not in ('completed','failed','rejected')">
+                            <field name="reflection" readonly="1"/>
+                        </page>
+                        <page string="LLM Calls" name="audit">
+                            <field name="audit_ids"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_ov_ve_run_list" model="ir.ui.view">
+        <field name="name">ov.virtual.employee.run.list</field>
+        <field name="model">ov.virtual.employee.run</field>
+        <field name="arch" type="xml">
+            <list string="Runs"
+                  decoration-info="state in ('queued','planning')"
+                  decoration-warning="state == 'awaiting_approval'"
+                  decoration-success="state == 'completed'"
+                  decoration-danger="state == 'failed'"
+                  decoration-muted="state == 'rejected'">
+                <field name="name"/>
+                <field name="create_date"/>
+                <field name="employee_id"/>
+                <field name="task_id"/>
+                <field name="trigger_kind"/>
+                <field name="total_cost_usd" sum="Total Cost"/>
+                <field name="state" widget="badge"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_ov_ve_run_search" model="ir.ui.view">
+        <field name="name">ov.virtual.employee.run.search</field>
+        <field name="model">ov.virtual.employee.run</field>
+        <field name="arch" type="xml">
+            <search string="Runs">
+                <field name="name"/>
+                <field name="employee_id"/>
+                <field name="task_id"/>
+                <separator/>
+                <filter string="Awaiting Approval" name="filter_awaiting"
+                        domain="[('state', '=', 'awaiting_approval')]"/>
+                <filter string="Completed" name="filter_completed"
+                        domain="[('state', '=', 'completed')]"/>
+                <filter string="Failed" name="filter_failed"
+                        domain="[('state', '=', 'failed')]"/>
+                <group>
+                    <filter string="Employee" name="group_employee"
+                            context="{'group_by': 'employee_id'}"/>
+                    <filter string="State" name="group_state"
+                            context="{'group_by': 'state'}"/>
+                    <filter string="Day" name="group_day"
+                            context="{'group_by': 'create_date:day'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_ov_ve_run" model="ir.actions.act_window">
+        <field name="name">Runs</field>
+        <field name="res_model">ov.virtual.employee.run</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_ov_ve_run_search"/>
+        <field name="context">{'search_default_filter_awaiting': 1}</field>
+    </record>
+
+</odoo>

@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+
+    <record id="view_ov_ai_creator_audit_list" model="ir.ui.view">
+        <field name="name">ov.ai.creator.audit.list</field>
+        <field name="model">ov.ai.creator.audit</field>
+        <field name="arch" type="xml">
+            <list string="LLM Call Audit Trail"
+                  decoration-danger="error"
+                  decoration-muted="cost_usd == 0">
+                <field name="create_date"/>
+                <field name="model_name"/>
+                <field name="tokens_in" sum="Total In"/>
+                <field name="tokens_out" sum="Total Out"/>
+                <field name="cost_usd" sum="Total Cost (USD)"/>
+                <field name="latency_ms" avg="Avg Latency"/>
+                <field name="error"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_ov_ai_creator_audit_form" model="ir.ui.view">
+        <field name="name">ov.ai.creator.audit.form</field>
+        <field name="model">ov.ai.creator.audit</field>
+        <field name="arch" type="xml">
+            <form string="LLM Call" create="false" edit="false">
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="model_name"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="create_date"/>
+                            <field name="tokens_in"/>
+                            <field name="tokens_out"/>
+                        </group>
+                        <group>
+                            <field name="cost_usd"/>
+                            <field name="latency_ms"/>
+                            <field name="error"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="System Prompt" name="system">
+                            <field name="system_prompt_excerpt"/>
+                        </page>
+                        <page string="User Message" name="user">
+                            <field name="user_message_excerpt"/>
+                        </page>
+                        <page string="Response" name="response">
+                            <field name="response_excerpt"/>
+                        </page>
+                        <page string="Metadata" name="metadata">
+                            <field name="metadata_json" widget="ace" options="{'mode': 'json'}"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_ov_ai_creator_audit_search" model="ir.ui.view">
+        <field name="name">ov.ai.creator.audit.search</field>
+        <field name="model">ov.ai.creator.audit</field>
+        <field name="arch" type="xml">
+            <search string="LLM Calls">
+                <field name="model_name"/>
+                <field name="user_message_excerpt" string="User Message"/>
+                <filter string="With Errors" name="filter_errors"
+                        domain="[('error', '!=', False)]"/>
+                <filter string="Today" name="filter_today"
+                        domain="[('create_date', '>=', context_today().strftime('%Y-%m-%d'))]"/>
+                <filter string="This Week" name="filter_week"
+                        domain="[('create_date', '>=', (context_today() - datetime.timedelta(days=7)).strftime('%Y-%m-%d'))]"/>
+                <group>
+                    <filter string="Model" name="group_model" context="{'group_by': 'model_name'}"/>
+                    <filter string="Day" name="group_day" context="{'group_by': 'create_date:day'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_ov_ai_creator_audit" model="ir.actions.act_window">
+        <field name="name">LLM Audit Trail</field>
+        <field name="res_model">ov.ai.creator.audit</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_ov_ai_creator_audit_search"/>
+    </record>
+
+</odoo>

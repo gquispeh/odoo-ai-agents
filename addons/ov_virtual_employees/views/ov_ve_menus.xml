@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ====================================================== -->
+    <!-- Root Menu                                                -->
+    <!-- ====================================================== -->
+    <menuitem
+        id="menu_ov_ve_root"
+        name="Virtual Employees"
+        web_icon="ov_virtual_employees,static/description/icon.png"
+        sequence="23"/>
+
+    <!-- ====================================================== -->
+    <!-- Operations                                               -->
+    <!-- ====================================================== -->
+    <menuitem
+        id="menu_ov_ve_operations"
+        name="Operations"
+        parent="menu_ov_ve_root"
+        sequence="10"/>
+
+    <menuitem
+        id="menu_ov_ve_employees"
+        name="Employees"
+        parent="menu_ov_ve_operations"
+        action="action_ov_virtual_employee"
+        sequence="10"/>
+
+    <menuitem
+        id="menu_ov_ve_runs"
+        name="Runs"
+        parent="menu_ov_ve_operations"
+        action="action_ov_ve_run"
+        sequence="20"/>
+
+    <!-- ====================================================== -->
+    <!-- Configuration (manager-only)                             -->
+    <!-- ====================================================== -->
+    <menuitem
+        id="menu_ov_ve_configuration"
+        name="Configuration"
+        parent="menu_ov_ve_root"
+        groups="ov_virtual_employees.group_ov_ve_manager"
+        sequence="90"/>
+
+    <menuitem
+        id="menu_ov_ve_roles"
+        name="Roles"
+        parent="menu_ov_ve_configuration"
+        action="action_ov_ve_role"
+        sequence="10"/>
+
+    <menuitem
+        id="menu_ov_ve_capabilities"
+        name="Capabilities"
+        parent="menu_ov_ve_configuration"
+        action="action_ov_ve_capability"
+        sequence="20"/>
+
+</odoo>

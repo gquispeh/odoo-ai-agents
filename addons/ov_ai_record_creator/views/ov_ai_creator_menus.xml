@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+
+    <menuitem id="menu_ov_ai_root"
+              name="OpenVoo AI"
+              sequence="22"
+              web_icon="ov_ai_record_creator,static/description/icon.png"/>
+
+    <menuitem id="menu_ov_ai_creator_request"
+              name="Record Requests"
+              parent="menu_ov_ai_root"
+              action="action_ov_ai_creator_request"
+              sequence="10"/>
+
+    <menuitem id="menu_ov_ai_creator_execution"
+              name="Executions"
+              parent="menu_ov_ai_root"
+              action="action_ov_ai_creator_execution"
+              sequence="20"/>
+
+    <menuitem id="menu_ov_ai_creator_audit"
+              name="LLM Audit"
+              parent="menu_ov_ai_root"
+              action="action_ov_ai_creator_audit"
+              sequence="30"
+              groups="base.group_system"/>
+
+    <menuitem id="menu_ov_ai_config"
+              name="Configuration"
+              parent="menu_ov_ai_root"
+              sequence="90"
+              groups="base.group_system"/>
+
+    <menuitem id="menu_ov_ai_creator_template"
+              name="Templates"
+              parent="menu_ov_ai_config"
+              action="action_ov_ai_creator_template"
+              sequence="10"/>
+
+</odoo>

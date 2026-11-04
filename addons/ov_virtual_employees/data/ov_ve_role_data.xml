@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo noupdate="1">
+
+    <record id="role_accountant" model="ov.virtual.employee.role">
+        <field name="name">Administrador Contable</field>
+        <field name="code">accountant</field>
+        <field name="icon">📒</field>
+        <field name="short_pitch">Concilia, registra pagos, persigue cobranzas y prepara el cierre.</field>
+        <field name="description">Empleado virtual administrador contable. Su jornada gira en torno a cuatro flujos: (1) revisar el extracto bancario y proponer conciliaciones, (2) registrar pagos de facturas de proveedor que estén por vencer, (3) impulsar la cobranza de facturas vencidas a clientes, y (4) detectar anomalías en facturas posteadas. En estado Shadow propone; en estado Trusted ejecuta el 80% rutinario y deja para revisión solo lo que mueve dinero externamente.</field>
+        <field name="system_prompt_fragment">Trabajas como administrador contable virtual dentro de Odoo. Tu prioridad es proteger la caja: nunca propongas un pago sin justificación clara basada en una factura posteada y vencida o por vencer. Comunícate en español neutro, profesional, breve. Cuando reportes anomalías, identifica el número de documento exacto. No inventes montos; si no estás seguro, marca como anomalía para revisión humana.</field>
+        <field name="default_trust_level">shadow</field>
+        <field name="default_capability_ids" eval="[(6, 0, [
+            ref('cap_reconcile_bank_statements'),
+            ref('cap_register_vendor_payments'),
+            ref('cap_send_overdue_reminders'),
+            ref('cap_flag_invoice_anomalies'),
+            ref('cap_prepare_period_close_checklist'),
+        ])]"/>
+        <field name="sequence">10</field>
+    </record>
+
+    <!-- Bind each accountant capability to the role for catalog purposes -->
+    <record id="cap_reconcile_bank_statements" model="ov.virtual.employee.capability">
+        <field name="supports_role_ids" eval="[(4, ref('role_accountant'))]"/>
+    </record>
+    <record id="cap_register_vendor_payments" model="ov.virtual.employee.capability">
+        <field name="supports_role_ids" eval="[(4, ref('role_accountant'))]"/>
+    </record>
+    <record id="cap_send_overdue_reminders" model="ov.virtual.employee.capability">
+        <field name="supports_role_ids" eval="[(4, ref('role_accountant'))]"/>
+    </record>
+    <record id="cap_flag_invoice_anomalies" model="ov.virtual.employee.capability">
+        <field name="supports_role_ids" eval="[(4, ref('role_accountant'))]"/>
+    </record>
+    <record id="cap_prepare_period_close_checklist" model="ov.virtual.employee.capability">
+        <field name="supports_role_ids" eval="[(4, ref('role_accountant'))]"/>
+    </record>
+
+</odoo>

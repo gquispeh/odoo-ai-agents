@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo noupdate="1">
+
+    <record id="seq_ov_ve_run" model="ir.sequence">
+        <field name="name">Virtual Employee Run</field>
+        <field name="code">ov.virtual.employee.run</field>
+        <field name="prefix">VER/%(year)s/</field>
+        <field name="padding">5</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+    <record id="cron_ov_ve_tick" model="ir.cron">
+        <field name="name">OpenVoo VE · Cron tick (perceive + plan due tasks)</field>
+        <field name="model_id" ref="model_ov_virtual_employee"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_tick()</field>
+        <field name="interval_number">15</field>
+        <field name="interval_type">minutes</field>
+        <field name="active" eval="True"/>
+    </record>
+
+</odoo>

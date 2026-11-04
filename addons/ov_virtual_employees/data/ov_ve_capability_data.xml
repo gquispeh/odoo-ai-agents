@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo noupdate="1">
+
+    <record id="cap_reconcile_bank_statements" model="ov.virtual.employee.capability">
+        <field name="name">Reconcile Bank Statements</field>
+        <field name="code">reconcile_bank_statements</field>
+        <field name="description">Inspect open bank statement lines, group by partner, and report unmatched items.</field>
+        <field name="handler_model">ov.virtual.employee.accountant</field>
+        <field name="handler_method">cap_reconcile_bank_statements</field>
+        <field name="risk_level">low</field>
+        <field name="requires_confirmation_by_default" eval="False"/>
+        <field name="sequence">10</field>
+    </record>
+
+    <record id="cap_register_vendor_payments" model="ov.virtual.employee.capability">
+        <field name="name">Register Vendor Payments</field>
+        <field name="code">register_vendor_payments</field>
+        <field name="description">Find vendor bills due within a window and propose payment registration via the creator gate.</field>
+        <field name="handler_model">ov.virtual.employee.accountant</field>
+        <field name="handler_method">cap_register_vendor_payments</field>
+        <field name="risk_level">high</field>
+        <field name="requires_confirmation_by_default" eval="True"/>
+        <field name="creator_template_code">vendor_payment_batch</field>
+        <field name="sequence">20</field>
+    </record>
+
+    <record id="cap_send_overdue_reminders" model="ov.virtual.employee.capability">
+        <field name="name">Send Overdue Reminders</field>
+        <field name="code">send_overdue_reminders</field>
+        <field name="description">Draft reminder emails to partners with overdue customer invoices.</field>
+        <field name="handler_model">ov.virtual.employee.accountant</field>
+        <field name="handler_method">cap_send_overdue_reminders</field>
+        <field name="risk_level">high</field>
+        <field name="requires_confirmation_by_default" eval="True"/>
+        <field name="sequence">30</field>
+    </record>
+
+    <record id="cap_flag_invoice_anomalies" model="ov.virtual.employee.capability">
+        <field name="name">Flag Invoice Anomalies</field>
+        <field name="code">flag_invoice_anomalies</field>
+        <field name="description">Scan recent invoices for duplicate suspects and missing tax lines.</field>
+        <field name="handler_model">ov.virtual.employee.accountant</field>
+        <field name="handler_method">cap_flag_invoice_anomalies</field>
+        <field name="risk_level">low</field>
+        <field name="requires_confirmation_by_default" eval="False"/>
+        <field name="sequence">40</field>
+    </record>
+
+    <record id="cap_prepare_period_close_checklist" model="ov.virtual.employee.capability">
+        <field name="name">Prepare Period-Close Checklist</field>
+        <field name="code">prepare_period_close_checklist</field>
+        <field name="description">Post a period-end checklist to the employee thread for the controller to follow.</field>
+        <field name="handler_model">ov.virtual.employee.accountant</field>
+        <field name="handler_method">cap_prepare_period_close_checklist</field>
+        <field name="risk_level">low</field>
+        <field name="requires_confirmation_by_default" eval="False"/>
+        <field name="sequence">50</field>
+    </record>
+
+</odoo>

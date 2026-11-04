@@ -1,0 +1,9 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_ov_ai_creator_template_user,ov.ai.creator.template user,model_ov_ai_creator_template,base.group_user,1,0,0,0
+access_ov_ai_creator_template_manager,ov.ai.creator.template manager,model_ov_ai_creator_template,base.group_system,1,1,1,1
+access_ov_ai_creator_request_user,ov.ai.creator.request user,model_ov_ai_creator_request,base.group_user,1,1,1,0
+access_ov_ai_creator_request_manager,ov.ai.creator.request manager,model_ov_ai_creator_request,base.group_system,1,1,1,1
+access_ov_ai_creator_execution_user,ov.ai.creator.execution user,model_ov_ai_creator_execution,base.group_user,1,0,0,0
+access_ov_ai_creator_execution_manager,ov.ai.creator.execution manager,model_ov_ai_creator_execution,base.group_system,1,1,1,1
+access_ov_ai_creator_audit_user,ov.ai.creator.audit user (no read),model_ov_ai_creator_audit,base.group_user,0,0,0,0
+access_ov_ai_creator_audit_manager,ov.ai.creator.audit manager,model_ov_ai_creator_audit,base.group_system,1,1,1,1

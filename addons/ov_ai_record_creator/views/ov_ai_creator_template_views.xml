@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+
+    <record id="view_ov_ai_creator_template_list" model="ir.ui.view">
+        <field name="name">ov.ai.creator.template.list</field>
+        <field name="model">ov.ai.creator.template</field>
+        <field name="arch" type="xml">
+            <list string="Creator Templates">
+                <field name="code"/>
+                <field name="name"/>
+                <field name="target_model"/>
+                <field name="active" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_ov_ai_creator_template_form" model="ir.ui.view">
+        <field name="name">ov.ai.creator.template.form</field>
+        <field name="model">ov.ai.creator.template</field>
+        <field name="arch" type="xml">
+            <form string="Creator Template">
+                <sheet>
+                    <widget name="web_ribbon" title="Archived" bg_color="bg-danger"
+                            invisible="active"/>
+                    <div class="oe_title">
+                        <h1><field name="name" placeholder="e.g. Empleado completo"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="code"/>
+                            <field name="target_model"/>
+                        </group>
+                        <group>
+                            <field name="active"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Description" name="description">
+                            <field name="description" placeholder="Explain to the LLM what this template creates and what the user typically asks for."/>
+                        </page>
+                        <page string="Fields Schema" name="schema">
+                            <div class="alert alert-info" role="alert">
+                                JSON array describing each field the LLM should fill:
+                                <code>[{"name": "name", "type": "char", "required": true, "hint": "Full name"}]</code>
+                            </div>
+                            <field name="fields_schema_json" widget="ace" options="{'mode': 'json'}"/>
+                        </page>
+                        <page string="Defaults" name="defaults">
+                            <div class="alert alert-info" role="alert">
+                                JSON object with default values applied to every created record.
+                            </div>
+                            <field name="defaults_json" widget="ace" options="{'mode': 'json'}"/>
+                        </page>
+                        <page string="Related Records" name="related">
+                            <div class="alert alert-info" role="alert">
+                                JSON array of related records to create alongside the main one.
+                                <code>[{"model": "hr.contract", "link_field": "employee_id", "fields": [...]}]</code>
+                            </div>
+                            <field name="related_specs_json" widget="ace" options="{'mode': 'json'}"/>
+                        </page>
+                        <page string="Validators" name="validators">
+                            <div class="alert alert-info" role="alert">
+                                JSON array of validators run on parsed records before write.
+                            </div>
+                            <field name="validators_json" widget="ace" options="{'mode': 'json'}"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_ov_ai_creator_template" model="ir.actions.act_window">
+        <field name="name">Creator Templates</field>
+        <field name="res_model">ov.ai.creator.template</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Define a template
+            </p>
+            <p>
+                Templates declare which Odoo model an LLM is allowed to populate from natural language,
+                which fields it must fill, and which related records (contracts, addresses, BoMs...) must be
+                created alongside.
+            </p>
+        </field>
+    </record>
+
+</odoo>

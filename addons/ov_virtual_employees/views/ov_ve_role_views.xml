@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+
+    <record id="view_ov_ve_role_list" model="ir.ui.view">
+        <field name="name">ov.virtual.employee.role.list</field>
+        <field name="model">ov.virtual.employee.role</field>
+        <field name="arch" type="xml">
+            <list string="Roles">
+                <field name="sequence" widget="handle"/>
+                <field name="icon"/>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="short_pitch"/>
+                <field name="default_trust_level"/>
+                <field name="active" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_ov_ve_role_kanban" model="ir.ui.view">
+        <field name="name">ov.virtual.employee.role.kanban</field>
+        <field name="model">ov.virtual.employee.role</field>
+        <field name="arch" type="xml">
+            <kanban class="o_kanban_dashboard" sample="1">
+                <field name="id"/>
+                <field name="name"/>
+                <field name="icon"/>
+                <field name="short_pitch"/>
+                <field name="code"/>
+                <templates>
+                    <t t-name="card">
+                        <div class="oe_kanban_global_click p-3" style="border-left:4px solid #10B981;">
+                            <div style="font-size:36px; line-height:1;">
+                                <field name="icon"/>
+                            </div>
+                            <div class="mt-2">
+                                <strong style="font-size:16px;"><field name="name"/></strong>
+                            </div>
+                            <div class="text-muted small mt-1">
+                                <field name="short_pitch"/>
+                            </div>
+                            <div class="mt-3 small">
+                                <code><field name="code"/></code>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="view_ov_ve_role_form" model="ir.ui.view">
+        <field name="name">ov.virtual.employee.role.form</field>
+        <field name="model">ov.virtual.employee.role</field>
+        <field name="arch" type="xml">
+            <form string="Role">
+                <sheet>
+                    <widget name="web_ribbon" title="Archived" bg_color="bg-danger"
+                            invisible="active"/>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="icon" style="margin-right:12px;"/>
+                            <field name="name" placeholder="e.g. Administrador Contable"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="code"/>
+                            <field name="default_trust_level"/>
+                            <field name="sequence"/>
+                        </group>
+                        <group>
+                            <field name="active"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="short_pitch"/>
+                    </group>
+                    <notebook>
+                        <page string="Description" name="description">
+                            <field name="description"/>
+                        </page>
+                        <page string="System Prompt Fragment" name="prompt">
+                            <field name="system_prompt_fragment"
+                                   placeholder="Injected into the planner LLM prompt. Spanish recommended."/>
+                        </page>
+                        <page string="Default Capabilities" name="caps">
+                            <field name="default_capability_ids"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_ov_ve_role" model="ir.actions.act_window">
+        <field name="name">Roles</field>
+        <field name="res_model">ov.virtual.employee.role</field>
+        <field name="view_mode">kanban,list,form</field>
+    </record>
+
+</odoo>

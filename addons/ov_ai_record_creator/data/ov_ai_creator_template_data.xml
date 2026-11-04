@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- Sequence for request references -->
+        <record id="seq_ov_ai_creator_request" model="ir.sequence">
+            <field name="name">OpenVoo AI Creator Request</field>
+            <field name="code">ov.ai.creator.request</field>
+            <field name="prefix">AIR/%(year)s/</field>
+            <field name="padding">5</field>
+        </record>
+
+        <!-- ================= TEMPLATE · hr.employee ================= -->
+        <record id="tmpl_hr_employee" model="ov.ai.creator.template">
+            <field name="name">Employee (hr.employee)</field>
+            <field name="code">hr_employee</field>
+            <field name="target_model">hr.employee</field>
+            <field name="sequence">10</field>
+            <field name="description">Create employees, optionally with a draft contract.</field>
+            <field name="fields_schema_json">[
+                {"name":"name","type":"string","required":true,"description":"Full name of the employee"},
+                {"name":"job_title","type":"string","required":false,"description":"Job title or position"},
+                {"name":"work_email","type":"string","required":false,"description":"Work email address"},
+                {"name":"mobile_phone","type":"string","required":false,"description":"Mobile phone number"},
+                {"name":"department_name","type":"string","required":false,"description":"Department name. The system will resolve or create it."}
+            ]</field>
+            <field name="defaults_json">{"active": true}</field>
+            <field name="related_specs_json">[
+                {"model":"hr.contract","field_to_main":"employee_id","defaults":{"state":"draft","name":"Initial Contract"}}
+            ]</field>
+        </record>
+
+        <!-- ================= TEMPLATE · res.partner ================= -->
+        <record id="tmpl_res_partner" model="ov.ai.creator.template">
+            <field name="name">Partner (res.partner)</field>
+            <field name="code">res_partner</field>
+            <field name="target_model">res.partner</field>
+            <field name="sequence">20</field>
+            <field name="description">Create customers or vendors with basic contact information.</field>
+            <field name="fields_schema_json">[
+                {"name":"name","type":"string","required":true,"description":"Partner name (company or person)"},
+                {"name":"is_company","type":"boolean","required":false,"description":"True if the partner is a company"},
+                {"name":"email","type":"string","required":false,"description":"Primary email"},
+                {"name":"phone","type":"string","required":false,"description":"Phone number"},
+                {"name":"vat","type":"string","required":false,"description":"Tax ID (RUC in Peru)"},
+                {"name":"street","type":"string","required":false,"description":"Street address"},
+                {"name":"city","type":"string","required":false,"description":"City"}
+            ]</field>
+            <field name="defaults_json">{"active": true, "customer_rank": 1}</field>
+        </record>
+
+        <!-- ================= TEMPLATE · product.product ================= -->
+        <record id="tmpl_product_product" model="ov.ai.creator.template">
+            <field name="name">Product (product.product)</field>
+            <field name="code">product_product</field>
+            <field name="target_model">product.product</field>
+            <field name="sequence">30</field>
+            <field name="description">Create storable or service products.</field>
+            <field name="fields_schema_json">[
+                {"name":"name","type":"string","required":true,"description":"Product name"},
+                {"name":"default_code","type":"string","required":false,"description":"Internal reference / SKU"},
+                {"name":"list_price","type":"float","required":false,"description":"Sales price"},
+                {"name":"standard_price","type":"float","required":false,"description":"Cost price"},
+                {"name":"type","type":"string","required":false,"description":"Product type: 'consu', 'service'. Default consu."},
+                {"name":"description_sale","type":"string","required":false,"description":"Description for sales"}
+            ]</field>
+            <field name="defaults_json">{"active": true, "type": "consu"}</field>
+        </record>
+
+    </data>
+</odoo>
